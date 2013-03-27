@@ -1,0 +1,30 @@
+{
+  "name": "bde",
+  "description": "Browserify Development Environment",
+  "author": "Damon Oehlman <damon.oehlman@sidelab.com>",
+  "tags": [
+    "browserify"
+  ],
+  "version": "0.0.0",
+  "bin": {
+    "bde": "./bin/bde"
+  },
+  "dependencies": {
+    "brfs": "0.0.x",
+    "browserify": "2.8.x",
+    "insert-css": "0.0.x",
+    "mime": "1.2.x"
+  },
+  "devDependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DamonOehlman/bde.git"
+  },
+  "bugs": {
+    "url": "http://github.com/DamonOehlman/bde/issues"
+  },
+  "scripts": {
+  },
+  "contributors": []
+}
