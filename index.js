@@ -3,12 +3,14 @@ var brfs = require('brfs'),
     fs = require('fs'),
     http = require('http'),
     mime = require('mime'),
+    out = require('out'),
     path = require('path'),
     reBrowserfiable = /^.*\/(.*?)\-?bundle\.js$/;
 
 module.exports = function(opts, callback) {
     var server = http.createServer(),
-        basePath;
+        basePath,
+        serverPort;
 
     if (typeof opts == 'function') {
         callback = opts;
@@ -20,6 +22,9 @@ module.exports = function(opts, callback) {
 
     // initialise the base path
     basePath = path.resolve(opts.path);
+
+    // initialise the server port
+    serverPort = parseInt(opts.port, 10) || 8080;
 
     // handle requests
     server.on('request', function(req, res) {
@@ -45,6 +50,7 @@ module.exports = function(opts, callback) {
 
             // browserify
             b = browserify(browserifyTarget);
+            out('!{blue}200: {0} ==> {1}', browserifyTarget.slice(basePath.length), req.url);
 
             // TODO: add transforms
 
@@ -58,12 +64,14 @@ module.exports = function(opts, callback) {
         else {
             fs.readFile(targetFile, function(err, data) {
                 if (err) {
+                    out('!{red}404: {0}', req.url);
                     res.writeHead(404);
                     res.end('Not found');
 
                     return;
                 }
 
+                out('!{green}200: {0}', req.url);
                 res.writeHead(200, {
                     'Content-Type': mime.lookup(req.url)
                 });
@@ -73,5 +81,11 @@ module.exports = function(opts, callback) {
         }
     });
 
-    server.listen(parseInt(opts.port, 10) || 8080, callback);
+    server.listen(serverPort, function(err) {
+        out('!{grey}started on port: {0}', serverPort);
+
+        if (typeof callback == 'function') {
+            callback.apply(this, arguments);
+        }
+    });
 };

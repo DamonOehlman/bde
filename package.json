@@ -13,7 +13,8 @@
     "brfs": "0.0.x",
     "browserify": "2.8.x",
     "insert-css": "0.0.x",
-    "mime": "1.2.x"
+    "mime": "1.2.x",
+    "out": "0.4.x"
   },
   "devDependencies": {
   },

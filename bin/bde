@@ -1,4 +1,2 @@
 #!/usr/bin/env node
-require('..')({ path: process.cwd(), port: 8080 }, function() {
-    console.log('started bde');
-});
+require('..')({ path: process.cwd(), port: process.argv[2] || 8080 });
