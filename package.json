@@ -5,7 +5,7 @@
   "tags": [
     "browserify"
   ],
-  "version": "0.0.0",
+  "version": "0.0.1",
   "bin": {
     "bde": "./bin/bde"
   },
@@ -16,8 +16,7 @@
     "mime": "1.2.x",
     "out": "0.4.x"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/DamonOehlman/bde.git"
@@ -25,7 +24,6 @@
   "bugs": {
     "url": "http://github.com/DamonOehlman/bde/issues"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "contributors": []
 }
