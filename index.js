@@ -1,13 +1,22 @@
-var brfs = require('brfs'),
-    browserify = require('browserify'),
+var browserify = require('browserify'),
     fs = require('fs'),
     http = require('http'),
     mime = require('mime'),
     out = require('out'),
     path = require('path'),
     reBrowserfiable = /^.*\/(.*?)\-?bundle\.js$/,
+
+    // see: https://github.com/substack/node-browserify#list-of-source-transforms
     knownTransforms = [
-        'brfs'
+        'brfs',
+        'coffeeify',
+        'caching-coffeeify',
+        'hbsfy',
+        'rfileify',
+        'liveify',
+        'es6ify',
+        'stylify',
+        'turn'
     ];
 
 module.exports = function(opts, callback) {
@@ -74,7 +83,7 @@ function createRequestHandler(opts) {
                 'Content-Type': 'application/javascript'
             });
 
-            b.bundle().pipe(res);
+            b.bundle({ debug: true }).pipe(res);
         }
         // otherwlse, simply read the file and return
         else {
