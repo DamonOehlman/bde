@@ -1,2 +1,13 @@
 #!/usr/bin/env node
-require('..')({ path: process.cwd(), port: process.argv[2] || 8080 });
+var out = require('out'),
+    bde = require('../'),
+    opts = {
+        path: process.cwd(),
+        port: process.argv[2] || 8080
+    };
+
+bde(opts, function(err) {
+    if (err) return out('Unable to start bde: {0}', err);
+
+    out('!{grey}bde server started on port: {0}', opts.port);
+});

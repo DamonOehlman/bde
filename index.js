@@ -31,29 +31,37 @@ module.exports = function(opts, callback) {
     // ensure we have default opts
     opts = opts || {};
 
+    // ensure we have a callback
+    callback = callback || function() {};
+
     // initialise the server port
     serverPort = parseInt(opts.port, 10) || 8080;
 
     // handle requests
     server.on('request', createRequestHandler(opts));
 
-    // listen
-    server.listen(serverPort, function(err) {
-        out('!{grey}started on port: {0}', serverPort);
+    // if the project has a server component then start that first
+    startProjectServer(opts, function(err) {
+        if (err) return callback(err);
 
-        if (typeof callback == 'function') {
-            callback.apply(this, arguments);
-        }
+        // listen
+        server.listen(serverPort, callback);
     });
 };
 
 function createRequestHandler(opts) {
     var basePath = path.resolve(opts.path),
+        umdModuleName = path.basename(basePath),
+        umdModulePath = path.resolve(basePath, umdModuleName + '.js'),
         transforms = findTransforms(basePath);
 
     return function(req, res) {
         var targetFile,
             browserifyTarget,
+            browserifyOpts = {
+                debug: true,
+                detectGlobals: true
+            },
             match,
             b;
 
@@ -68,9 +76,20 @@ function createRequestHandler(opts) {
         // check if the file is something we should browserify
         match = reBrowserfiable.exec(targetFile);
 
-        // if browserfiable, then browserify
-        if (match) {
-            browserifyTarget = path.join(path.dirname(targetFile), (match[1] || 'index') + '.js');
+        // check if this is a umd module request
+        if (match || targetFile === umdModulePath) {
+            // initialise the browserify target to the correct path
+            browserifyTarget = targetFile === umdModulePath ?
+                path.join(basePath, 'index.js') : 
+                path.join(path.dirname(targetFile), (match[1] || 'index') + '.js');
+
+            // if we have matched a standalone request, then add the standalone flag to the opts
+            if (targetFile === umdModulePath) {
+                browserifyOpts.standalone = umdModuleName;
+
+                // debug option breaks standalone
+                browserifyOpts.debug = false;
+            }
 
             // browserify
             b = browserify(browserifyTarget);
@@ -78,12 +97,16 @@ function createRequestHandler(opts) {
             // add transforms
             transforms.forEach(b.transform.bind(b));
 
-            out('!{blue}200: {0} [browserify] => {1}', browserifyTarget.slice(basePath.length), req.url);
+            out('!{blue}200: {0} [browserify] => {1} !{grey}{2}', browserifyTarget.slice(basePath.length), req.url, JSON.stringify(browserifyOpts));
             res.writeHead(200, {
                 'Content-Type': 'application/javascript'
             });
 
-            b.bundle({ debug: true }).pipe(res);
+            b.bundle(browserifyOpts, function(err, content) {
+                if (err) return reportError(err, res);
+
+                res.end(content);
+            });
         }
         // otherwlse, simply read the file and return
         else {
@@ -116,5 +139,29 @@ function readTargetFile(targetFile, req, res) {
         });
 
         res.end(data);
+    });
+}
+
+/**
+## reportError(err, res)
+
+Used to report a browserification error over the wire
+*/
+function reportError(err, res) {
+    res.end('alert(\'' + err.message + '\');');
+    console.log(err);
+}
+
+function startProjectServer(opts, callback) {
+    var serverLoader = path.resolve(opts.path, 'server.js');
+
+    (fs.exists || path.exists)(serverLoader, function(exists) {
+        // if we don't have a server, callback immediately
+        if (! exists) return callback();
+
+        // otherwise, attempt to start the server in a separate node process
+        // TODO:
+
+        callback();
     });
 }

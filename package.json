@@ -10,7 +10,7 @@
     "bde": "./bin/bde"
   },
   "dependencies": {
-    "browserify": "2.8.x",
+    "browserify": "2.13.x",
     "insert-css": "0.0.x",
     "mime": "1.2.x",
     "out": "0.4.x"
