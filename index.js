@@ -8,7 +8,6 @@ var browserify = require('browserify'),
 
     // see: https://github.com/substack/node-browserify#list-of-source-transforms
     knownTransforms = [
-        'brfs',
         'coffeeify',
         'caching-coffeeify',
         'hbsfy',
@@ -16,7 +15,8 @@ var browserify = require('browserify'),
         'liveify',
         'es6ify',
         'stylify',
-        'turn'
+        'turn',
+        'brfs'
     ];
 
 module.exports = function(opts, callback) {
