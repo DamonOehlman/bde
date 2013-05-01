@@ -21,4 +21,5 @@ bde(opts, function(err) {
     if (err) return out('Unable to start bde: {0}', err);
 
     out('!{grey}bde server started on port: {0}', opts.port);
+    out('!{grey}will browserify files matching: *-{0}.js', opts.suffix);
 });

@@ -28,8 +28,7 @@ var browserify = require('browserify'),
 
 module.exports = function(opts, callback) {
     var server = http.createServer(),
-        serverPort,
-        reBrowserfiable;
+        serverPort;
 
     if (typeof opts == 'function') {
         callback = opts;
@@ -42,9 +41,6 @@ module.exports = function(opts, callback) {
         port: 8080,
         suffix: 'bundle'
     });
-
-    // create the suffix regex
-    reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$');
 
     // ensure we have a callback
     callback = callback || function() {};
@@ -68,7 +64,8 @@ function createRequestHandler(opts) {
     var basePath = path.resolve(opts.path),
         umdModuleName = path.basename(basePath),
         umdModulePath = path.resolve(basePath, umdModuleName + '.js'),
-        transforms = findTransforms(basePath);
+        transforms = findTransforms(basePath),
+        reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$', 'i');
 
     return function(req, res) {
         var targetFile,

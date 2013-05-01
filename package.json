@@ -5,7 +5,8 @@
   "tags": [
     "browserify"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "preferGlobal": "true",
   "bin": {
     "bde": "./bin/bde"
   },
