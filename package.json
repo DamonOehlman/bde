@@ -13,7 +13,10 @@
     "browserify": "2.13.x",
     "insert-css": "0.0.x",
     "mime": "1.2.x",
-    "out": "0.4.x"
+    "out": "0.4.x",
+    "uuid": "~1.4.1",
+    "eve": "git://github.com/adobe-webplatform/eve.git",
+    "lodash": "~1.2.1"
   },
   "devDependencies": {},
   "repository": {

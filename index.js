@@ -1,9 +1,17 @@
 var browserify = require('browserify'),
+    eve = require('eve'),
     fs = require('fs'),
     http = require('http'),
     mime = require('mime'),
+    _ = require('lodash'),
     out = require('out'),
     path = require('path'),
+    uuid = require('uuid'),
+    reportError = require('./lib/report-error'),
+    requireModule = require('./lib/require-module'),
+    createEventStream = require('./lib/create-eventstream');
+
+    rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
     reBrowserfiable = /^.*\/(.*?)\-?bundle\.js$/,
 
     // see: https://github.com/substack/node-browserify#list-of-source-transforms
@@ -70,6 +78,11 @@ function createRequestHandler(opts) {
             req.url += 'index.html';
         }
 
+        // provide an events stream
+        if (req.url.indexOf('/events') === 0) {
+            return createEventStream(opts, req, res);
+        }
+
         // determine which of the files is required
         targetFile = path.join(basePath, req.url);
 
@@ -103,7 +116,7 @@ function createRequestHandler(opts) {
             });
 
             b.bundle(browserifyOpts, function(err, content) {
-                if (err) return reportError(err, res);
+                if (err) return handleError(opts, err, res);
 
                 res.end(content);
             });
@@ -143,13 +156,41 @@ function readTargetFile(targetFile, req, res) {
 }
 
 /**
-## reportError(err, res)
+## handleError(err, res)
 
 Used to report a browserification error over the wire
 */
-function reportError(err, res) {
-    res.end('alert(\'' + err.message + '\');');
-    console.log(err);
+function handleError(opts, err, res) {
+    var requireMatch = rePackageRequire.exec(err.message),
+        requestId = uuid().replace(/\-/g, ''),
+        b;
+
+    // browserify the event bridge
+    b = browserify(path.resolve(__dirname, 'client', 'bridge.js'));
+
+    b.bundle({}, function(err, content) {
+        content = 'window.requestId = \'' + requestId +'\';\n' + content;
+
+        res.end(content);
+
+        // patch the request id into the opts
+        opts = _.extend({}, opts, { requestId: requestId });
+
+        // once the request is ready, then invoke the handlers
+        eve.once(requestId + '.ready', function() {
+            process.nextTick(function() {
+                console.log('event stream ready');
+
+                // if we hit a require match, then get the library
+                if (requireMatch) {
+                    requireModule(opts, requireMatch[1]);
+                }
+                else {
+                    reportError(opts, err);
+                }
+            });
+        });
+    });
 }
 
 function startProjectServer(opts, callback) {
