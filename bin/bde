@@ -2,12 +2,32 @@
 var out = require('out'),
     bde = require('../'),
     opts = {
-        path: process.cwd(),
-        port: process.argv[2] || 8080
-    };
+		path: process.cwd(),
+		port: 8080,
+		suffix: 'bundle.js'
+	};
+
+	if(process.argv.length === 3){
+		opts.port = process.argv[2];
+	}
+
+	if(process.argv.length > 3){
+		
+		var port = -1*~process.argv.indexOf('-p'),
+			suffix = -1*~process.argv.indexOf('-s'); 
+
+		if(port){
+			opts.port = process.argv[port];
+		}
+
+		if(suffix){
+			opts.suffix = process.argv[suffix];
+		}
+	}
 
 bde(opts, function(err) {
     if (err) return out('Unable to start bde: {0}', err);
 
     out('!{grey}bde server started on port: {0}', opts.port);
+    out('!{grey}watching files with suffix: {0}', opts.suffix);
 });

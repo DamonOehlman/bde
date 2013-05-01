@@ -10,7 +10,11 @@ npm install bde -g
 
 ## Running
 
-In a directory that you are building a browserify module in, simple run `bde`.  This will start bde on port `8080`, but if you want to start it on a particular port, then specify the port as the first command-line argument (e.g. `bde 8090`).
+In a directory that you are building a browserify module in, simply run `bde`.  This will start bde on port `8080` and watch for any files ending in bundle.js.
+
+If you want to start it on a particular port, then specify the port as the first command-line argument (e.g. `bde 8090`) or using the -p flag (e.g. `bde -p 8090`).
+
+If you would like to watch for a different suffix, use the -s flag (e.g. `bde -s foo.js`).
 
 ## Conventions
 

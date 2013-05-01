@@ -12,7 +12,6 @@ var browserify = require('browserify'),
     createEventStream = require('./lib/create-eventstream');
 
     rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
-    reBrowserfiable = /^.*\/(.*?)\-?bundle\.js$/,
 
     // see: https://github.com/substack/node-browserify#list-of-source-transforms
     knownTransforms = [
@@ -87,7 +86,7 @@ function createRequestHandler(opts) {
         targetFile = path.join(basePath, req.url);
 
         // check if the file is something we should browserify
-        match = reBrowserfiable.exec(targetFile);
+        match = new RegExp('^.+' + opts.suffix + '$').exec(targetFile);
 
         // check if this is a umd module request
         if (match || targetFile === umdModulePath) {
