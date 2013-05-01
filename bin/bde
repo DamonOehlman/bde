@@ -1,10 +1,21 @@
 #!/usr/bin/env node
 var out = require('out'),
+    nopt = require('nopt'),
+    knownOpts = {
+        'path': [String],
+        'port': [Number],
+        'suffix': [String]
+    },
+    shortHands = {
+        'p': ['--port'],
+        's': ['--suffix']
+    },
     bde = require('../'),
-    opts = {
-        path: process.cwd(),
-        port: process.argv[2] || 8080
-    };
+    opts = nopt(knownOpts, shortHands, process.argv, 2);
+
+// check for a raw port in the args
+opts.port = opts.port || 
+    (opts.argv && opts.argv.remain.length ? parseInt(opts.argv.remain[0], 10) : undefined);
 
 bde(opts, function(err) {
     if (err) return out('Unable to start bde: {0}', err);

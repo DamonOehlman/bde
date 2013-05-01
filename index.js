@@ -12,7 +12,6 @@ var browserify = require('browserify'),
     createEventStream = require('./lib/create-eventstream');
 
     rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
-    reBrowserfiable = /^.*\/(.*?)\-?bundle\.js$/,
 
     // see: https://github.com/substack/node-browserify#list-of-source-transforms
     knownTransforms = [
@@ -29,7 +28,8 @@ var browserify = require('browserify'),
 
 module.exports = function(opts, callback) {
     var server = http.createServer(),
-        serverPort;
+        serverPort,
+        reBrowserfiable;
 
     if (typeof opts == 'function') {
         callback = opts;
@@ -37,7 +37,14 @@ module.exports = function(opts, callback) {
     }
 
     // ensure we have default opts
-    opts = opts || {};
+    opts = _.defaults(opts || {}, {
+        path: process.cwd(),
+        port: 8080,
+        suffix: 'bundle'
+    });
+
+    // create the suffix regex
+    reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$');
 
     // ensure we have a callback
     callback = callback || function() {};

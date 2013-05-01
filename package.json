@@ -16,7 +16,8 @@
     "out": "0.4.x",
     "uuid": "~1.4.1",
     "eve": "git://github.com/adobe-webplatform/eve.git",
-    "lodash": "~1.2.1"
+    "lodash": "~1.2.1",
+    "nopt": "~2.1.1"
   },
   "devDependencies": {},
   "repository": {
