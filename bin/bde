@@ -17,9 +17,14 @@ var out = require('out'),
 opts.port = opts.port || 
     (opts.argv && opts.argv.remain.length ? parseInt(opts.argv.remain[0], 10) : undefined);
 
-bde(opts, function(err) {
+bde(opts, function(err, backend) {
     if (err) return out('Unable to start bde: {0}', err);
 
     out('!{grey}bde server started on port: {0}', opts.port);
     out('!{grey}will browserify files matching: *-{0}.js', opts.suffix);
+
+    // if a backend has been started also, then let the user know
+    if (backend) {
+        out('!{grey}backend started');
+    }
 });

@@ -12,13 +12,15 @@
   },
   "dependencies": {
     "browserify": "2.13.x",
+    "hatch": "0.0.x",
     "insert-css": "0.0.x",
+    "debug": "*",
     "mime": "1.2.x",
     "out": "0.4.x",
     "uuid": "~1.4.1",
-    "eve": "git://github.com/adobe-webplatform/eve.git",
     "lodash": "~1.2.1",
-    "nopt": "~2.1.1"
+    "nopt": "~2.1.1",
+    "stylify": "0.0.x"
   },
   "devDependencies": {},
   "repository": {

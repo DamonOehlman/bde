@@ -1,6 +1,8 @@
 var browserify = require('browserify'),
-    eve = require('eve'),
+    debug = require('debug')('bde'),
+    hatch = require('hatch'),
     fs = require('fs'),
+    fork = require('child_process').fork,
     http = require('http'),
     mime = require('mime'),
     _ = require('lodash'),
@@ -9,7 +11,6 @@ var browserify = require('browserify'),
     uuid = require('uuid'),
     reportError = require('./lib/report-error'),
     requireModule = require('./lib/require-module'),
-    createEventStream = require('./lib/create-eventstream');
 
     rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
 
@@ -35,6 +36,9 @@ module.exports = function(opts, callback) {
         opts = {};
     }
 
+    // hatchify the server
+    hatch(server);
+
     // ensure we have default opts
     opts = _.defaults(opts || {}, {
         path: process.cwd(),
@@ -52,11 +56,13 @@ module.exports = function(opts, callback) {
     server.on('request', createRequestHandler(opts));
 
     // if the project has a server component then start that first
-    startProjectServer(opts, function(err) {
+    startProjectServer(opts, function(err, backend) {
         if (err) return callback(err);
 
         // listen
-        server.listen(serverPort, callback);
+        server.listen(serverPort, function(err) {
+            callback(err, backend);
+        });
     });
 };
 
@@ -82,10 +88,8 @@ function createRequestHandler(opts) {
             req.url += 'index.html';
         }
 
-        // provide an events stream
-        if (req.url.indexOf('/events') === 0) {
-            return createEventStream(opts, req, res);
-        }
+        // if this is a hatch request, abort
+        if (req.url.indexOf('/__hatch') === 0) return;
 
         // determine which of the files is required
         targetFile = path.join(basePath, req.url);
@@ -172,27 +176,33 @@ function handleError(opts, err, res) {
     // browserify the event bridge
     b = browserify(path.resolve(__dirname, 'client', 'bridge.js'));
 
-    b.bundle({}, function(err, content) {
-        content = 'window.requestId = \'' + requestId +'\';\n' + content;
+    // add transforms
+    // findTransforms(path.resolve(opts.path)).forEach(b.transform.bind(b));
+    b.transform(require('stylify'));
 
-        res.end(content);
+    // bundle
+    b.bundle({}, function(err, content) {
+        if (err) {
+            console.log('error handler broken :/', err);
+            return res.end('alert(\'error handler broken :/\');');
+        }
+
+        res.end('var requestId = \'' + requestId +'\';\n' + content);
 
         // patch the request id into the opts
         opts = _.extend({}, opts, { requestId: requestId });
 
-        // once the request is ready, then invoke the handlers
-        eve.once(requestId + '.ready', function() {
-            process.nextTick(function() {
-                console.log('event stream ready');
+        // wait for the hatch ready
+        hatch.waitFor(requestId, function() {
+            console.log('event stream ready');
 
-                // if we hit a require match, then get the library
-                if (requireMatch) {
-                    requireModule(opts, requireMatch[1]);
-                }
-                else {
-                    reportError(opts, err);
-                }
-            });
+            // if we hit a require match, then get the library
+            if (requireMatch) {
+                requireModule(this, opts, requireMatch[1]);
+            }
+            else {
+                reportError(this, opts, err);
+            }
         });
     });
 }
@@ -200,13 +210,12 @@ function handleError(opts, err, res) {
 function startProjectServer(opts, callback) {
     var serverLoader = path.resolve(opts.path, 'server.js');
 
+    debug('checking for server loader: ' + serverLoader);
     (fs.exists || path.exists)(serverLoader, function(exists) {
         // if we don't have a server, callback immediately
         if (! exists) return callback();
 
-        // otherwise, attempt to start the server in a separate node process
-        // TODO:
-
-        callback();
+        debug('server loader found, starting server');
+        callback(null, fork(serverLoader));
     });
 }

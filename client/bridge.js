@@ -1,18 +1,11 @@
 // create an event source back to the bde server
-var source = new EventSource('/events/' + window.requestId);
+var hatch = require('hatch/client'),
+    insertCss = require('insert-css');
 
-source.addEventListener('browserify:error', function() {
-    console.log('received error');
-});
+// insert some base css
+insertCss(require('./bridge.styl'));
 
-source.addEventListener('message', function(evt) {
-    var data;
-
-    try {
-        data = JSON.parse(evt.data);
-    }
-    catch (e) {
-    }
-
-    console.log(data);
-});
+hatch(requestId)
+    .on('install', function(name) {
+        console.log('need to install: ' + name);
+    });
