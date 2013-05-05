@@ -137,10 +137,21 @@ function createRequestHandler(opts) {
 }
 
 function findTransforms(targetPath) {
-    var foundTransforms = knownTransforms.map(function(moduleName) {
-            return path.join(targetPath, 'node_modules', moduleName);
-        }).filter(fs.existsSync || path.existsSync);
+    var _existsSync = fs.existsSync || path.existsSync,
+        foundTransforms;
 
+    // head up the tree until we find a node_modules directory
+    while (! _existsSync(path.join(targetPath, 'node_modules'))) {
+        targetPath = path.dirname(targetPath);
+    }
+
+    // find the transforms
+    debug('looking for transforms in: ' + targetPath);
+    foundTransforms = knownTransforms.map(function(moduleName) {
+        return path.join(targetPath, 'node_modules', moduleName);
+    }).filter(fs.existsSync || path.existsSync);
+
+    debug('found ' + foundTransforms.length + ' valid transforms');
     return foundTransforms.map(require);
 }
 
@@ -181,9 +192,9 @@ function handleError(opts, err, res) {
     b.transform(require('stylify'));
 
     // bundle
-    b.bundle({}, function(err, content) {
-        if (err) {
-            console.log('error handler broken :/', err);
+    b.bundle({}, function(bundleError, content) {
+        if (bundleError) {
+            console.log('error handler broken :/', bundleError);
             return res.end('alert(\'error handler broken :/\');');
         }
 

@@ -8,4 +8,7 @@ insertCss(require('./bridge.styl'));
 hatch(requestId)
     .on('install', function(name) {
         console.log('need to install: ' + name);
+    })
+    .on('error', function(err) {
+        console.log('caught error while browserifying: ', err);
     });
