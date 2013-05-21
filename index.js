@@ -138,11 +138,17 @@ function createRequestHandler(opts) {
 
 function findTransforms(targetPath) {
     var _existsSync = fs.existsSync || path.existsSync,
-        foundTransforms;
+        foundTransforms,
+        lastTargetPath;
+
+    debug('looking for transforms on path: ' + targetPath);
 
     // head up the tree until we find a node_modules directory
     while (! _existsSync(path.join(targetPath, 'node_modules'))) {
         targetPath = path.dirname(targetPath);
+
+        if (targetPath === lastTargetPath) break;
+        lastTargetPath = targetPath;
     }
 
     // find the transforms
@@ -167,7 +173,7 @@ function readTargetFile(targetFile, req, res) {
 
         out('!{green}200: {0}', req.url);
         res.writeHead(200, {
-            'Content-Type': mime.lookup(req.url)
+            'Content-Type': mime.lookup(req.url) + '; encoding: utf-8'
         });
 
         res.end(data);
