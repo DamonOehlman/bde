@@ -11,6 +11,7 @@ var browserify = require('browserify'),
     uuid = require('uuid'),
     reportError = require('./lib/report-error'),
     requireModule = require('./lib/require-module'),
+    packageJson = require('./package.json'),
 
     rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
 
@@ -27,7 +28,7 @@ var browserify = require('browserify'),
         'brfs'
     ];
 
-module.exports = function(opts, callback) {
+var bde = module.exports = function(opts, callback) {
     var server = http.createServer(),
         serverPort;
 
@@ -65,6 +66,9 @@ module.exports = function(opts, callback) {
         });
     });
 };
+
+// patch in the version of bde
+bde.version = packageJson.version;
 
 function createRequestHandler(opts) {
     var basePath = path.resolve(opts.path),

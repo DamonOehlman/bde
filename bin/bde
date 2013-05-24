@@ -32,7 +32,7 @@ opts.argv.remain.forEach(function(arg) {
 bde(opts, function(err, backend) {
     if (err) return out('Unable to start bde: {0}', err);
 
-    out('!{grey}bde server started on port {0} at !{underline,grey}{1}', opts.port, opts.path);
+    out('!{grey}bde {2} server started on port {0} at !{underline,grey}{1}', opts.port, opts.path, bde.version);
     out('!{grey}will browserify files matching: *-{0}.js', opts.suffix);
 
     // if a backend has been started also, then let the user know
