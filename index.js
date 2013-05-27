@@ -3,7 +3,6 @@ var browserify = require('browserify'),
     hatch = require('hatch'),
     fs = require('fs'),
     fork = require('child_process').fork,
-    http = require('http'),
     mime = require('mime'),
     _ = require('lodash'),
     out = require('out'),
@@ -11,6 +10,11 @@ var browserify = require('browserify'),
     uuid = require('uuid'),
     reportError = require('./lib/report-error'),
     requireModule = require('./lib/require-module'),
+    _existsSync = fs.existsSync || path.existsSync,
+
+    extensionMapping = {
+        cert: 'crt'
+    },
 
     rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
 
@@ -28,16 +32,15 @@ var browserify = require('browserify'),
     ];
 
 module.exports = function(opts, callback) {
-    var server = http.createServer(),
-        serverPort;
+    var server,
+        serverPort,
+        serverOpts = {},
+        useHttps = false;
 
     if (typeof opts == 'function') {
         callback = opts;
         opts = {};
     }
-
-    // hatchify the server
-    hatch(server);
 
     // ensure we have default opts
     opts = _.defaults(opts || {}, {
@@ -45,6 +48,25 @@ module.exports = function(opts, callback) {
         port: 8080,
         suffix: 'bundle'
     });
+
+    // look for cert, key and ca files
+    ['ca', 'cert', 'key'].forEach(function(certType) {
+        var certFile = path.resolve(opts.certPath, 'server.' + (extensionMapping[certType] || certType));
+
+        console.log(certFile);
+        if (_existsSync(certFile)) {
+            useHttps = true;
+            serverOpts[certType] = fs.readFileSync(certFile);
+        }
+    });
+
+    console.log(serverOpts);
+
+    // create the server
+    server = require(useHttps ? 'https' : 'http').createServer(serverOpts);
+
+    // hatchify the server
+    hatch(server);
 
     // ensure we have a callback
     callback = callback || function() {};
@@ -137,8 +159,7 @@ function createRequestHandler(opts) {
 }
 
 function findTransforms(targetPath) {
-    var _existsSync = fs.existsSync || path.existsSync,
-        foundTransforms,
+    var foundTransforms,
         lastTargetPath;
 
     debug('looking for transforms on path: ' + targetPath);

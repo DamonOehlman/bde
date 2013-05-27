@@ -5,7 +5,8 @@ var out = require('out'),
     knownOpts = {
         'path': [String],
         'port': [Number],
-        'suffix': [String]
+        'suffix': [String],
+        'certPath': [path]
     },
     shortHands = {
         'p': ['--port'],
