@@ -51,7 +51,7 @@ var bde = module.exports = function(opts, callback) {
 
     // look for cert, key and ca files
     ['ca', 'cert', 'key'].forEach(function(certType) {
-        var certFile = path.resolve(opts.certPath, 'server.' + (extensionMapping[certType] || certType));
+        var certFile = path.resolve(opts.certPath || process.cwd(), 'server.' + (extensionMapping[certType] || certType));
 
         if (_existsSync(certFile)) {
             useHttps = true;
