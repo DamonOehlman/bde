@@ -73,14 +73,9 @@ var bde = module.exports = function(opts, callback) {
     // handle requests
     server.on('request', createRequestHandler(opts));
 
-    // if the project has a server component then start that first
-    startProjectServer(opts, function(err, backend) {
-        if (err) return callback(err);
-
-        // listen
-        server.listen(serverPort, function(err) {
-            callback(err, backend);
-        });
+    // listen
+    server.listen(serverPort, function(err) {
+        callback(err);
     });
 };
 
@@ -241,18 +236,5 @@ function handleError(opts, err, res) {
                 reportError(this, opts, err);
             }
         });
-    });
-}
-
-function startProjectServer(opts, callback) {
-    var serverLoader = path.resolve(opts.path, 'server.js');
-
-    debug('checking for server loader: ' + serverLoader);
-    (fs.exists || path.exists)(serverLoader, function(exists) {
-        // if we don't have a server, callback immediately
-        if (! exists) return callback();
-
-        debug('server loader found, starting server');
-        callback(null, fork(serverLoader));
     });
 }
