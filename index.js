@@ -34,8 +34,7 @@ var browserify = require('browserify'),
 var bde = module.exports = function(opts, callback) {
     var server,
         serverPort,
-        serverOpts = {},
-        useHttps = false;
+        serverOpts;
 
     if (typeof opts == 'function') {
         callback = opts;
@@ -54,13 +53,13 @@ var bde = module.exports = function(opts, callback) {
         var certFile = path.resolve(opts.certPath || process.cwd(), 'server.' + (extensionMapping[certType] || certType));
 
         if (_existsSync(certFile)) {
-            useHttps = true;
+            serverOpts = serverOpts || {};
             serverOpts[certType] = fs.readFileSync(certFile);
         }
     });
 
     // create the server
-    server = require(useHttps ? 'https' : 'http').createServer(serverOpts);
+    server = require(serverOpts ? 'https' : 'http').createServer(serverOpts);
 
     // hatchify the server
     hatch(server);
