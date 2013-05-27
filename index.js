@@ -15,7 +15,7 @@ var browserify = require('browserify'),
     extensionMapping = {
         cert: 'crt'
     },
-
+    packageJson = require('./package.json'),
     rePackageRequire = /^module\s\"([^\.\"]*)\".*$/,
 
     // see: https://github.com/substack/node-browserify#list-of-source-transforms
@@ -31,7 +31,7 @@ var browserify = require('browserify'),
         'brfs'
     ];
 
-module.exports = function(opts, callback) {
+var bde = module.exports = function(opts, callback) {
     var server,
         serverPort,
         serverOpts = {},
@@ -53,14 +53,11 @@ module.exports = function(opts, callback) {
     ['ca', 'cert', 'key'].forEach(function(certType) {
         var certFile = path.resolve(opts.certPath, 'server.' + (extensionMapping[certType] || certType));
 
-        console.log(certFile);
         if (_existsSync(certFile)) {
             useHttps = true;
             serverOpts[certType] = fs.readFileSync(certFile);
         }
     });
-
-    console.log(serverOpts);
 
     // create the server
     server = require(useHttps ? 'https' : 'http').createServer(serverOpts);
@@ -87,6 +84,9 @@ module.exports = function(opts, callback) {
         });
     });
 };
+
+// patch in the version of bde
+bde.version = packageJson.version;
 
 function createRequestHandler(opts) {
     var basePath = path.resolve(opts.path),
