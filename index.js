@@ -5,7 +5,6 @@ var browserify = require('browserify');
 var debug = require('debug')('bde');
 var hatch = require('hatch');
 var fs = require('fs');
-var fork = require('child_process').fork;
 var mime = require('mime');
 var _ = require('lodash');
 var out = require('out');

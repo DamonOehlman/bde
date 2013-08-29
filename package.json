@@ -30,6 +30,7 @@
   "bugs": {
     "url": "http://github.com/DamonOehlman/bde/issues"
   },
-  "scripts": {},
-  "contributors": []
+  "scripts": {
+    "gendocs": "gendocs > README.md"
+  }
 }
