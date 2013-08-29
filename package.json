@@ -11,12 +11,12 @@
     "bde": "./bin/bde"
   },
   "dependencies": {
-    "browserify": "2.14.x",
-    "hatch": "0.1.x",
+    "browserify": "~2.29.0",
+    "hatch": "~0.2.0",
     "insert-css": "0.0.x",
     "debug": "*",
     "mime": "1.2.x",
-    "out": "0.4.x",
+    "out": "~0.5.0",
     "uuid": "~1.4.1",
     "lodash": "~1.2.1",
     "nopt": "~2.1.1",
