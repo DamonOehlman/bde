@@ -12,6 +12,7 @@ var path = require('path');
 var uuid = require('uuid');
 var reportError = require('./lib/report-error');
 var requireModule = require('./lib/require-module');
+var url = require('url');
 var _existsSync = fs.existsSync || path.existsSync;
 
 var extensionMapping = {
@@ -143,17 +144,21 @@ function createRequestHandler(opts) {
     };
     var match;
     var b;
+    var urlParts;
 
     // if this is a request for / add index.html
     if (req.url[req.url.length - 1] === '/') {
       req.url += 'index.html';
     }
 
+    // parse the url
+    urlParts = url.parse(req.url);
+
     // if this is a hatch request, abort
     if (req.url.indexOf('/__hatch') === 0) return;
 
     // determine which of the files is required
-    targetFile = path.join(basePath, req.url);
+    targetFile = path.join(basePath, urlParts.pathname);
 
     // check if the file is something we should browserify
     match = reBrowserfiable.exec(targetFile);
@@ -233,7 +238,7 @@ function readTargetFile(targetFile, req, res) {
 
     out('!{green}200: {0}', req.url);
     res.writeHead(200, {
-      'Content-Type': mime.lookup(req.url) + '; encoding: utf-8'
+      'Content-Type': mime.lookup(targetFile) + '; encoding: utf-8'
     });
 
     res.end(data);
