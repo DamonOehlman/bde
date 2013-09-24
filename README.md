@@ -10,7 +10,6 @@ friend (though you should also definitely check out
 
 [![NPM](https://nodei.co/npm/bde.png)](https://nodei.co/npm/bde/)
 
-[![Build Status](https://travis-ci.org/DamonOehlman/bde.png?branch=master)](https://travis-ci.org/DamonOehlman/bde)
 
 ## Running
 
