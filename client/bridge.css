@@ -1,4 +1,12 @@
 html {
   margin: 0;
-  background: red;
+}
+
+.error h3 {
+  color: maroon;
+}
+
+.error pre {
+  overflow-x: scroll;
+  padding: 10px;
 }
