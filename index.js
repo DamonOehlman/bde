@@ -198,7 +198,7 @@ function createRequestHandler(opts) {
     }
     // otherwlse, simply read the file and return
     else {
-      readTargetFile(targetFile, req, res);
+      readTargetFile(targetFile, opts, req, res);
     }
   };
 }
@@ -227,9 +227,35 @@ function findTransforms(targetPath) {
   return foundTransforms.map(require);
 }
 
-function readTargetFile(targetFile, req, res) {
+function generateIndex(opts, req, res) {
+  // find the .js files in the target folder
+  var jsFiles = fs.readdirSync(path.resolve(opts.path));
+  jsFiles = jsFiles.filter(function(filename) {
+    return path.extname(filename) == '.js';
+  }).map(function(filename) {
+    return path.basename(filename, '.js');
+  });
+
+  res.writeHead(200, {
+    'Content-type': mime.lookup('index.html') + '; encoding: utf-8'
+  });
+
+  res.end([
+    '<html>',
+    '<body>',
+    '<script src="' + (jsFiles[0] || 'index') + '-bundle.js"></script>',
+    '</body>',
+    '</html>'
+  ].join(''));
+}
+
+function readTargetFile(targetFile, opts, req, res) {
   fs.readFile(targetFile, function(err, data) {
     if (err) {
+      if (path.basename(targetFile) === 'index.html') {
+        return generateIndex(opts, req, res);
+      }
+
       out('!{red}404: {0}', req.url);
       res.writeHead(404);
       res.end('Not found');
@@ -256,12 +282,14 @@ function handleError(opts, err, res) {
   var requestId = uuid().replace(/\-/g, '');
   var b;
 
+  console.log(require('util').inspect(err));
+
   // browserify the event bridge
   b = browserify(path.resolve(__dirname, 'client', 'bridge.js'));
 
   // add transforms
   // findTransforms(path.resolve(opts.path)).forEach(b.transform.bind(b));
-  b.transform(require('stylify'));
+  b.transform(require('brfs'));
 
   // bundle
   b.bundle({}, function(bundleError, content) {
