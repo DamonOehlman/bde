@@ -6,13 +6,14 @@ var debug = require('debug')('bde');
 var hatch = require('hatch');
 var fs = require('fs');
 var mime = require('mime');
-var _ = require('lodash');
 var out = require('out');
 var path = require('path');
 var uuid = require('uuid');
 var reportError = require('./lib/report-error');
 var requireModule = require('./lib/require-module');
 var url = require('url');
+var extend = require('cog/extend');
+var defaults = require('cog/defaults');
 var _existsSync = fs.existsSync || path.existsSync;
 
 var extensionMapping = {
@@ -87,7 +88,7 @@ var bde = module.exports = function(opts, callback) {
   }
 
   // ensure we have default opts
-  opts = _.defaults(opts || {}, {
+  opts = defaults(opts || {}, {
     path: process.cwd(),
     port: 8080,
     suffix: 'bundle'
@@ -272,7 +273,7 @@ function handleError(opts, err, res) {
     res.end('var requestId = \'' + requestId +'\';\n' + content);
 
     // patch the request id into the opts
-    opts = _.extend({}, opts, { requestId: requestId });
+    opts = extend({}, opts, { requestId: requestId });
 
     // wait for the hatch ready
     hatch.waitFor(requestId, function() {

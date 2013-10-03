@@ -8,16 +8,16 @@
     "bde": "./bin/bde"
   },
   "dependencies": {
-    "browserify": "~2.32.4",
-    "hatch": "~0.2.0",
+    "browserify": "~2.33.1",
+    "hatch": "~0.2.1",
     "insert-css": "0.0.x",
     "debug": "*",
     "mime": "1.2.x",
     "out": "~0.5.0",
     "uuid": "~1.4.1",
-    "lodash": "~1.2.1",
     "nopt": "~2.1.1",
-    "stylify": "0.0.x"
+    "cog": "~0.3.1",
+    "brfs": "0.0.8"
   },
   "devDependencies": {},
   "repository": {

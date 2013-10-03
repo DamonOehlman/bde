@@ -1,9 +1,10 @@
 // create an event source back to the bde server
+var fs = require('fs');
 var hatch = require('hatch/client');
 var insertCss = require('insert-css');
 
 // insert some base css
-insertCss(require('./bridge.styl'));
+insertCss(fs.readFileSync(__dirname + '/bridge.css'));
 
 hatch(requestId)
   .on('install', function(name) {
