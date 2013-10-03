@@ -17,7 +17,8 @@
     "uuid": "~1.4.1",
     "nopt": "~2.1.1",
     "cog": "~0.3.1",
-    "brfs": "0.0.8"
+    "brfs": "*",
+    "crel": "~1.0.0"
   },
   "devDependencies": {},
   "repository": {
