@@ -11,7 +11,7 @@
     "bde": "./bin/bde"
   },
   "dependencies": {
-    "browserify": "~2.32.4",
+    "browserify": "~2.34.3",
     "hatch": "~0.2.0",
     "insert-css": "0.0.x",
     "debug": "*",
