@@ -8,8 +8,8 @@
     "bde": "./bin/bde"
   },
   "dependencies": {
-    "browserify": "~2.33.1",
     "hatch": "~0.2.1",
+    "browserify": "~2.34.3",
     "insert-css": "0.0.x",
     "debug": "*",
     "mime": "1.2.x",

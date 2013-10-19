@@ -24,17 +24,17 @@ var packageJson = require('./package.json');
 var rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
 
 // see: https://github.com/substack/node-browserify#list-of-source-transforms
-var knownTransforms = [
+var transformers = require('./transformers');
+var knownTransforms = Object.keys(transformers).concat([
   'coffeeify',
   'caching-coffeeify',
   'hbsfy',
   'rfileify',
   'liveify',
-  'es6ify',
   'stylify',
   'turn',
   'brfs'
-];
+]);
 
 
 /**
@@ -183,7 +183,16 @@ function createRequestHandler(opts) {
       b = browserify(browserifyTarget);
 
       // add transforms
-      transforms.forEach(b.transform.bind(b));
+      transforms.forEach(function(t) {
+        // if the transform requires special treatment, do that
+        if (transformers[t.name]) {
+          debug('applying special transformer for ' + t.name);
+          transformers[t.name](b, t.module, browserifyTarget);
+        }
+        else {
+          b.transform(t.module);
+        }
+      });
 
       out('!{blue}200: {0} [browserify] => {1} !{grey}{2}', browserifyTarget.slice(basePath.length), req.url, JSON.stringify(browserifyOpts));
       res.writeHead(200, {
@@ -219,12 +228,23 @@ function findTransforms(targetPath) {
 
   // find the transforms
   debug('looking for transforms in: ' + targetPath);
-  foundTransforms = knownTransforms.map(function(moduleName) {
-    return path.join(targetPath, 'node_modules', moduleName);
-  }).filter(fs.existsSync || path.existsSync);
+  foundTransforms = knownTransforms
+    .map(function(moduleName) {
+      return {
+        name: moduleName,
+        path: path.join(targetPath, 'node_modules', moduleName)
+      };
+    })
+    .filter(function(mod) {
+      return (fs.existsSync || path.existsSync)(mod.path);
+    });
 
   debug('found ' + foundTransforms.length + ' valid transforms');
-  return foundTransforms.map(require);
+  return foundTransforms
+    .map(function(mod) {
+      mod.module = require(mod.path);
+      return mod;
+    });
 }
 
 function generateIndex(opts, req, res) {
