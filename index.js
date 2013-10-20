@@ -213,7 +213,7 @@ function createRequestHandler(opts) {
 }
 
 function findTransforms(targetPath) {
-  var foundTransforms;
+  var foundTransforms = [];
   var lastTargetPath;
 
   debug('looking for transforms on path: ' + targetPath);
@@ -226,9 +226,18 @@ function findTransforms(targetPath) {
     lastTargetPath = targetPath;
   }
 
+  // if the current directory is a known transform, include it
+  // this is useful for cases where you are working on a transform itself
+  if (knownTransforms.indexOf(path.basename(process.cwd())) >= 0) {
+    foundTransforms = [{
+      name: path.basename(process.cwd()),
+      path: process.cwd()
+    }];
+  }
+
   // find the transforms
   debug('looking for transforms in: ' + targetPath);
-  foundTransforms = knownTransforms
+  foundTransforms = foundTransforms.concat(knownTransforms
     .map(function(moduleName) {
       return {
         name: moduleName,
@@ -237,7 +246,7 @@ function findTransforms(targetPath) {
     })
     .filter(function(mod) {
       return (fs.existsSync || path.existsSync)(mod.path);
-    });
+    }));
 
   debug('found ' + foundTransforms.length + ' valid transforms');
   return foundTransforms
