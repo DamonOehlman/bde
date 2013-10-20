@@ -1,16 +1,8 @@
 {
   "name": "bde",
   "description": "Browserify Development Environment",
-<<<<<<< HEAD
   "author": "Damon Oehlman <damon.oehlman@gmail.com>",
   "version": "0.4.0",
-=======
-  "author": "Damon Oehlman <damon.oehlman@sidelab.com>",
-  "tags": [
-    "browserify"
-  ],
-  "version": "0.3.2",
->>>>>>> Bump version to 0.3.2
   "preferGlobal": "true",
   "bin": {
     "bde": "./bin/bde"
@@ -38,14 +30,10 @@
   },
   "scripts": {
     "gendocs": "gendocs > README.md"
-<<<<<<< HEAD
   },
   "main": "index.js",
   "keywords": [
     "browserify"
   ],
   "license": "MIT"
-=======
-  }
->>>>>>> Bump version to 0.3.2
 }
