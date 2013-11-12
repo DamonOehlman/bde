@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "hatch": "~0.2.1",
-    "browserify": "~2.34.3",
+    "browserify": "~2.35.1",
     "insert-css": "0.0.x",
     "debug": "*",
     "mime": "1.2.x",
@@ -18,7 +18,7 @@
     "nopt": "~2.1.1",
     "cog": "~0.3.1",
     "brfs": "*",
-    "crel": "~1.0.0"
+    "crel": "~1.1.0"
   },
   "devDependencies": {},
   "repository": {
