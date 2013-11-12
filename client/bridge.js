@@ -13,7 +13,7 @@ function reportError(err) {
     crel('pre', err.message)
   );
 
-  document.body.appendChild(errDiv);
+  document.body.insertBefore(errDiv, document.body.childNodes[0]);
 }
 
 hatch(requestId)
