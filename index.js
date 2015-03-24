@@ -45,7 +45,7 @@ var knownTransforms = Object.keys(transformers).concat([
   If you are developing on your local machine using
   [browserify](https://github.com/substack/node-substack), then bde is your
   friend (though you should also definitely check out
-  [beefy](https://github.com/chrisdickinson/beefy)). 
+  [beefy](https://github.com/chrisdickinson/beefy)).
 
   ## Running
 
@@ -168,7 +168,7 @@ function createRequestHandler(opts) {
     if (match || targetFile === umdModulePath) {
       // initialise the browserify target to the correct path
       browserifyTarget = targetFile === umdModulePath ?
-        path.join(basePath, 'index.js') : 
+        path.join(basePath, 'index.js') :
         path.join(path.dirname(targetFile), (match[1] || 'index') + '.js');
 
       // if we have matched a standalone request, then add the standalone flag to the opts
@@ -180,7 +180,7 @@ function createRequestHandler(opts) {
       }
 
       // browserify
-      b = browserify(browserifyTarget);
+      b = browserify(extend({ entries: [ browserifyTarget ] }, browserifyOpts));
 
       // add transforms
       transforms.forEach(function(t) {
@@ -199,7 +199,7 @@ function createRequestHandler(opts) {
         'Content-Type': 'application/javascript'
       });
 
-      b.bundle(browserifyOpts, function(err, content) {
+      b.bundle(function(err, content) {
         if (err) return handleError(opts, err, res);
 
         res.end(content);
