@@ -1,3 +1,4 @@
+
 # bde
 
 Browserify Development Environment.
@@ -5,10 +6,11 @@ Browserify Development Environment.
 If you are developing on your local machine using
 [browserify](https://github.com/substack/node-substack), then bde is your
 friend (though you should also definitely check out
-[beefy](https://github.com/chrisdickinson/beefy)). 
+[beefy](https://github.com/chrisdickinson/beefy)).
 
 
 [![NPM](https://nodei.co/npm/bde.png)](https://nodei.co/npm/bde/)
+
 
 
 ## Running
@@ -40,11 +42,20 @@ relevant `server.crt`, `server.key` and `server.ca` (if required) files into
 the working directory from which you start your application.  If detected
 bde will start the server on using HTTPS instead of HTTP.
 
+## Custom Transformers
+
+Listed below are a number of transforms that require special treatment to
+do their thing (i.e. more than `b.transform(module)`).
+
+### es6ify
+
+As per the instructions at: https://github.com/thlorenz/es6ify
+
 ## License(s)
 
 ### MIT
 
-Copyright (c) 2013 Damon Oehlman <damon.oehlman@gmail.com>
+Copyright (c) 2017 Damon Oehlman <damon.oehlman@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
