@@ -14,7 +14,6 @@ var requireModule = require('./lib/require-module');
 var url = require('url');
 var extend = require('cog/extend');
 var defaults = require('cog/defaults');
-var _existsSync = fs.existsSync || path.existsSync;
 
 var extensionMapping = {
   cert: 'crt'
@@ -22,20 +21,6 @@ var extensionMapping = {
 
 var packageJson = require('./package.json');
 var rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
-
-// see: https://github.com/substack/node-browserify#list-of-source-transforms
-var transformers = require('./transformers');
-var knownTransforms = Object.keys(transformers).concat([
-  'coffeeify',
-  'caching-coffeeify',
-  'hbsfy',
-  'rfileify',
-  'liveify',
-  'stylify',
-  'turn',
-  'brfs'
-]);
-
 
 /**
   # bde
@@ -45,7 +30,7 @@ var knownTransforms = Object.keys(transformers).concat([
   If you are developing on your local machine using
   [browserify](https://github.com/substack/node-substack), then bde is your
   friend (though you should also definitely check out
-  [beefy](https://github.com/chrisdickinson/beefy)).
+  [budo](https://github.com/mattdesl/budo)).
 
   ## Running
 
@@ -75,6 +60,13 @@ var knownTransforms = Object.keys(transformers).concat([
   relevant `server.crt`, `server.key` and `server.ca` (if required) files into
   the working directory from which you start your application.  If detected
   bde will start the server on using HTTPS instead of HTTP.
+
+  ## Using Browserify Transform
+
+  The best way to configure custom browserify behaviour is to use the
+  [browserify package.json configuration options](https://github.com/substack/node-browserify#packagejson).
+  Previous versions of `bde` tried to use overcomplicated logic to identify transforms
+  that were available, until I accidentally worked out it wasn't required :smile:
 **/
 
 var bde = module.exports = function(opts, callback) {
@@ -101,7 +93,7 @@ var bde = module.exports = function(opts, callback) {
       'server.' + (extensionMapping[certType] || certType)
     );
 
-    if (_existsSync(certFile)) {
+    if (fs.existsSync(certFile)) {
       serverOpts = serverOpts || {};
       serverOpts[certType] = fs.readFileSync(certFile);
     }
@@ -133,7 +125,6 @@ function createRequestHandler(opts) {
   var basePath = path.resolve(opts.path);
   var umdModuleName = path.basename(basePath);
   var umdModulePath = path.resolve(basePath, umdModuleName + '.js');
-  var transforms = findTransforms(basePath);
   var reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$', 'i');
 
   return function(req, res) {
@@ -181,19 +172,6 @@ function createRequestHandler(opts) {
 
       // browserify
       b = browserify(extend({ entries: [ browserifyTarget ] }, browserifyOpts));
-
-      // add transforms
-      transforms.forEach(function(t) {
-        // if the transform requires special treatment, do that
-        if (transformers[t.name]) {
-          debug('applying special transformer for ' + t.name);
-          transformers[t.name](b, t.module, browserifyTarget);
-        }
-        else {
-          b.transform(t.module);
-        }
-      });
-
       out('!{blue}200: {0} [browserify] => {1} !{grey}{2}', browserifyTarget.slice(basePath.length), req.url, JSON.stringify(browserifyOpts));
       res.writeHead(200, {
         'Content-Type': 'application/javascript'
@@ -210,50 +188,6 @@ function createRequestHandler(opts) {
       readTargetFile(targetFile, opts, req, res);
     }
   };
-}
-
-function findTransforms(targetPath) {
-  var foundTransforms = [];
-  var lastTargetPath;
-
-  debug('looking for transforms on path: ' + targetPath);
-
-  // head up the tree until we find a node_modules directory
-  while (! _existsSync(path.join(targetPath, 'node_modules'))) {
-    targetPath = path.dirname(targetPath);
-
-    if (targetPath === lastTargetPath) break;
-    lastTargetPath = targetPath;
-  }
-
-  // if the current directory is a known transform, include it
-  // this is useful for cases where you are working on a transform itself
-  if (knownTransforms.indexOf(path.basename(process.cwd())) >= 0) {
-    foundTransforms = [{
-      name: path.basename(process.cwd()),
-      path: process.cwd()
-    }];
-  }
-
-  // find the transforms
-  debug('looking for transforms in: ' + targetPath);
-  foundTransforms = foundTransforms.concat(knownTransforms
-    .map(function(moduleName) {
-      return {
-        name: moduleName,
-        path: path.join(targetPath, 'node_modules', moduleName)
-      };
-    })
-    .filter(function(mod) {
-      return (fs.existsSync || path.existsSync)(mod.path);
-    }));
-
-  debug('found ' + foundTransforms.length + ' valid transforms');
-  return foundTransforms
-    .map(function(mod) {
-      mod.module = require(mod.path);
-      return mod;
-    });
 }
 
 function generateIndex(opts, req, res) {
@@ -317,11 +251,10 @@ function handleError(opts, err, res) {
   b = browserify(path.resolve(__dirname, 'client', 'bridge.js'));
 
   // add transforms
-  // findTransforms(path.resolve(opts.path)).forEach(b.transform.bind(b));
   b.transform(require('brfs'));
 
   // bundle
-  b.bundle({}, function(bundleError, content) {
+  b.bundle(function(bundleError, content) {
     if (bundleError) {
       console.log('error handler broken :/', bundleError);
       return res.end('alert(\'error handler broken :/\');');
