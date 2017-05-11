@@ -6,7 +6,7 @@ Browserify Development Environment.
 If you are developing on your local machine using
 [browserify](https://github.com/substack/node-substack), then bde is your
 friend (though you should also definitely check out
-[beefy](https://github.com/chrisdickinson/beefy)).
+[budo](https://github.com/mattdesl/budo)).
 
 
 [![NPM](https://nodei.co/npm/bde.png)](https://nodei.co/npm/bde/)

@@ -30,7 +30,7 @@ var rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
   If you are developing on your local machine using
   [browserify](https://github.com/substack/node-substack), then bde is your
   friend (though you should also definitely check out
-  [beefy](https://github.com/chrisdickinson/beefy)).
+  [budo](https://github.com/mattdesl/budo)).
 
   ## Running
 
