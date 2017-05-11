@@ -11,7 +11,7 @@ friend (though you should also definitely check out
 
 [![NPM](https://nodei.co/npm/bde.png)](https://nodei.co/npm/bde/)
 
-
+[![bitHound Score](https://www.bithound.io/github/DamonOehlman/bde/badges/score.svg)](https://www.bithound.io/github/DamonOehlman/bde) 
 
 ## Running
 
