@@ -42,6 +42,13 @@ relevant `server.crt`, `server.key` and `server.ca` (if required) files into
 the working directory from which you start your application.  If detected
 bde will start the server on using HTTPS instead of HTTP.
 
+## Using Browserify Transform
+
+The best way to configure custom browserify behaviour is to use the
+[browserify package.json configuration options](https://github.com/substack/node-browserify#packagejson).
+Previous versions of `bde` tried to use overcomplicated logic to identify transforms
+that were available, until I accidentally worked out it wasn't required :smile:
+
 ## License(s)
 
 ### MIT
