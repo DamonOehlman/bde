@@ -1,40 +1,41 @@
 #!/usr/bin/env node
-var out = require('out');
-var nopt = require('nopt');
-var path = require('path');
-var bde = require('..');
+const out = require('out');
+const nopt = require('nopt');
+const fs = require('fs');
+const path = require('path');
+const bde = require('..');
 
-var knownOpts = {
+const knownOpts = {
   'path': [String],
   'port': [Number],
   'suffix': [String],
   'certPath': [path]
 };
 
-var shortHands = {
+const shortHands = {
   'p': ['--port'],
   's': ['--suffix']
 };
-    
-var opts = nopt(knownOpts, shortHands, process.argv, 2);
-var _existsSync = require('fs').existsSync || path.existsSync;
+
+const opts = nopt(knownOpts, shortHands, process.argv, 2);
 
 // iterate through the remaining args, and attempt to assign then to locations
 opts.argv.remain.forEach(function(arg) {
   // attempt to parse as an int
-  var intArg = parseInt(arg, 10);
+  const intArg = parseInt(arg, 10);
 
   // if the arg is a number, then assign as the port
   if (! isNaN(intArg)) {
     opts.port = intArg;
-  }
-  else if (_existsSync(path.resolve(arg))) {
+  } else if (fs.existsSync(path.resolve(arg))) {
     opts.path = path.resolve(arg);
   }
 });
 
 bde(opts, function(err, backend) {
-  if (err) return out('Unable to start bde: {0}', err);
+  if (err) {
+    return out('Unable to start bde: {0}', err);
+  }
 
   out('!{grey}bde {2} server started on port {0} at !{underline,grey}{1}', opts.port, opts.path, bde.version);
   out('!{grey}will browserify files matching: *-{0}.js', opts.suffix);

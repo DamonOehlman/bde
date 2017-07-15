@@ -1,26 +1,23 @@
-/* jshint node: true */
-'use strict';
+const browserify = require('browserify');
+const debug = require('debug')('bde');
+const hatch = require('hatch');
+const fs = require('fs');
+const mime = require('mime');
+const out = require('out');
+const path = require('path');
+const uuid = require('uuid');
+const reportError = require('./lib/report-error');
+const requireModule = require('./lib/require-module');
+const url = require('url');
+const extend = require('cog/extend');
+const defaults = require('cog/defaults');
 
-var browserify = require('browserify');
-var debug = require('debug')('bde');
-var hatch = require('hatch');
-var fs = require('fs');
-var mime = require('mime');
-var out = require('out');
-var path = require('path');
-var uuid = require('uuid');
-var reportError = require('./lib/report-error');
-var requireModule = require('./lib/require-module');
-var url = require('url');
-var extend = require('cog/extend');
-var defaults = require('cog/defaults');
-
-var extensionMapping = {
+const extensionMapping = {
   cert: 'crt'
 };
 
-var packageJson = require('./package.json');
-var rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
+const packageJson = require('./package.json');
+const rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
 
 /**
   # bde
@@ -69,7 +66,7 @@ var rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
   that were available, until I accidentally worked out it wasn't required :smile:
 **/
 
-var bde = module.exports = function(opts, callback) {
+const bde = module.exports = function(opts, callback) {
   var server;
   var serverPort;
   var serverOpts;
@@ -122,21 +119,22 @@ var bde = module.exports = function(opts, callback) {
 bde.version = packageJson.version;
 
 function createRequestHandler(opts) {
-  var basePath = path.resolve(opts.path);
-  var umdModuleName = path.basename(basePath);
-  var umdModulePath = path.resolve(basePath, umdModuleName + '.js');
-  var reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$', 'i');
+  const basePath = path.resolve(opts.path);
+  const umdModuleName = path.basename(basePath);
+  const umdModulePath = path.resolve(basePath, umdModuleName + '.js');
+  const reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$', 'i');
 
   return function(req, res) {
-    var targetFile;
-    var browserifyTarget;
-    var browserifyOpts = {
+    const browserifyOpts = {
       debug: true,
       detectGlobals: true
     };
-    var match;
-    var b;
-    var urlParts;
+
+    let targetFile;
+    let browserifyTarget;
+    let match;
+    let b;
+    let urlParts;
 
     // if this is a request for / add index.html
     if (req.url[req.url.length - 1] === '/') {
@@ -192,7 +190,7 @@ function createRequestHandler(opts) {
 
 function generateIndex(opts, req, res) {
   // find the .js files in the target folder
-  var jsFiles = fs.readdirSync(path.resolve(opts.path));
+  let jsFiles = fs.readdirSync(path.resolve(opts.path));
   jsFiles = jsFiles.filter(function(filename) {
     return path.extname(filename) == '.js';
   }).map(function(filename) {
@@ -241,9 +239,9 @@ function readTargetFile(targetFile, opts, req, res) {
 Used to report a browserification error over the wire
 */
 function handleError(opts, err, res) {
-  var requireMatch = rePackageRequire.exec(err.message);
-  var requestId = uuid().replace(/\-/g, '');
-  var b;
+  const requireMatch = rePackageRequire.exec(err.message);
+  const requestId = uuid().replace(/\-/g, '');
+  let b;
 
   console.log(require('util').inspect(err));
 
