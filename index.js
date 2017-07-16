@@ -188,33 +188,37 @@ function createRequestHandler(opts) {
   };
 }
 
-function generateIndex(opts, req, res) {
-  // find the .js files in the target folder
-  let jsFiles = fs.readdirSync(path.resolve(opts.path));
-  jsFiles = jsFiles.filter(function(filename) {
-    return path.extname(filename) == '.js';
-  }).map(function(filename) {
-    return path.basename(filename, '.js');
-  });
+function generatePage(targetFile, opts, req, res) {
+  const targetFilename = path.basename(targetFile, '.html');
+  const targetJsFile = targetFilename === 'index' ? findFirstJsFile(opts) : targetFilename;
 
   res.writeHead(200, {
-    'Content-type': mime.lookup('index.html') + '; encoding: utf-8'
+    'Content-type': mime.lookup(targetFile) + '; encoding: utf-8'
   });
 
-  res.end([
-    '<html>',
-    '<body>',
-    '<script src="' + (jsFiles[0] || 'index') + '-bundle.js"></script>',
-    '</body>',
-    '</html>'
-  ].join(''));
+  res.end(`
+    <html>
+    <body>
+    <script src="${targetJsFile}-bundle.js"></script>
+    </body>
+    </html>
+  `);
+}
+
+function findFirstJsFile(opts) {
+  const allJsFiles = fs.readdirSync(path.resolve(opts.path))
+    .filter(filename => path.extname(filename) === '.js')
+    .map(filename => path.basename(filename, '.js'));
+
+  debug('found js files: ', allJsFiles);
+  return allJsFiles[0];
 }
 
 function readTargetFile(targetFile, opts, req, res) {
   fs.readFile(targetFile, function(err, data) {
     if (err) {
-      if (path.basename(targetFile) === 'index.html') {
-        return generateIndex(opts, req, res);
+      if (path.extname(targetFile) === '.html') {
+        return generatePage(targetFile, opts, req, res);
       }
 
       out('!{red}404: {0}', req.url);
