@@ -5,7 +5,7 @@ var hatch = require('hatch/client');
 var insertCss = require('insert-css');
 
 // insert some base css
-insertCss(fs.readFileSync(__dirname + '/bridge.css'));
+insertCss(fs.readFileSync(__dirname + '/bridge.css', 'utf-8'));
 
 function reportError(err) {
   var errDiv = crel('div', { class: 'error' },
