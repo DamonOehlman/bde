@@ -2,7 +2,7 @@
   "name": "bde",
   "description": "Browserify Development Environment",
   "author": "Damon Oehlman <damon.oehlman@gmail.com>",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "bin": {
     "bde": "./bin/bde"
   },
