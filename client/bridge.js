@@ -1,16 +1,19 @@
 // create an event source back to the bde server
-var crel = require('crel');
-var fs = require('fs');
-var hatch = require('hatch/client');
-var insertCss = require('insert-css');
+const crel = require('crel');
+const fs = require('fs');
+const hatch = require('hatch/client');
+const insertCss = require('insert-css');
 
 // insert some base css
 insertCss(fs.readFileSync(__dirname + '/bridge.css', 'utf-8'));
 
 function reportError(err) {
-  var errDiv = crel('div', { class: 'error' },
+  const errDiv = crel('div', { class: 'error' },
     crel('h3', 'Error browserifying'),
-    crel('pre', err.message)
+    crel('pre', [
+      err.message,
+      err.stack
+    ])
   );
 
   document.body.insertBefore(errDiv, document.body.childNodes[0]);

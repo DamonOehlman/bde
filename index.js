@@ -247,7 +247,7 @@ function handleError(opts, err, res) {
   const requestId = uuid().replace(/\-/g, '');
   let b;
 
-  console.log(require('util').inspect(err));
+  // console.log(require('util').inspect(err));
 
   // browserify the event bridge
   b = browserify(path.resolve(__dirname, 'client', 'bridge.js'));
