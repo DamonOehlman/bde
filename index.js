@@ -68,7 +68,6 @@ const rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
 
 const bde = (module.exports = function(opts, callback) {
   let server;
-  let serverPort;
   let serverOpts;
 
   if (typeof opts == 'function') {
@@ -79,9 +78,12 @@ const bde = (module.exports = function(opts, callback) {
   // ensure we have default opts
   opts = defaults(opts || {}, {
     path: process.cwd(),
-    port: 8080,
+    port: process.env['PORT'] || 080,
     suffix: 'bundle',
   });
+
+  // ensure we have a callback
+  callback = callback || function() {};
 
   // look for cert, key and ca files
   ['ca', 'cert', 'key'].forEach(function(certType) {
@@ -93,23 +95,11 @@ const bde = (module.exports = function(opts, callback) {
     }
   });
 
-  // create the server
   server = require(serverOpts ? 'https' : 'http').createServer(serverOpts);
-
-  // hatchify the server
   hatch(server);
 
-  // ensure we have a callback
-  callback = callback || function() {};
-
-  // initialise the server port
-  serverPort = parseInt(opts.port, 10) || 8080;
-
-  // handle requests
   server.on('request', createRequestHandler(opts));
-
-  // listen
-  server.listen(serverPort, callback);
+  server.listen(opts.port, callback);
 });
 
 // patch in the version of bde
