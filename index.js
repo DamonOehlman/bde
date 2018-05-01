@@ -13,7 +13,7 @@ const extend = require('cog/extend');
 const defaults = require('cog/defaults');
 
 const extensionMapping = {
-  cert: 'crt'
+  cert: 'crt',
 };
 
 const packageJson = require('./package.json');
@@ -66,10 +66,10 @@ const rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
   that were available, until I accidentally worked out it wasn't required :smile:
 **/
 
-const bde = module.exports = function(opts, callback) {
-  var server;
-  var serverPort;
-  var serverOpts;
+const bde = (module.exports = function(opts, callback) {
+  let server;
+  let serverPort;
+  let serverOpts;
 
   if (typeof opts == 'function') {
     callback = opts;
@@ -80,15 +80,12 @@ const bde = module.exports = function(opts, callback) {
   opts = defaults(opts || {}, {
     path: process.cwd(),
     port: 8080,
-    suffix: 'bundle'
+    suffix: 'bundle',
   });
 
   // look for cert, key and ca files
   ['ca', 'cert', 'key'].forEach(function(certType) {
-    var certFile = path.resolve(
-      opts.certPath || process.cwd(),
-      'server.' + (extensionMapping[certType] || certType)
-    );
+    var certFile = path.resolve(opts.certPath || process.cwd(), 'server.' + (extensionMapping[certType] || certType));
 
     if (fs.existsSync(certFile)) {
       serverOpts = serverOpts || {};
@@ -113,7 +110,7 @@ const bde = module.exports = function(opts, callback) {
 
   // listen
   server.listen(serverPort, callback);
-};
+});
 
 // patch in the version of bde
 bde.version = packageJson.version;
@@ -122,12 +119,12 @@ function createRequestHandler(opts) {
   const basePath = path.resolve(opts.path);
   const umdModuleName = path.basename(basePath);
   const umdModulePath = path.resolve(basePath, umdModuleName + '.js');
-  const reBrowserfiable = new RegExp('^.*\/(.*?)\-?' + opts.suffix + '\.js$', 'i');
+  const reBrowserfiable = new RegExp('^.*/(.*?)-?' + opts.suffix + '.js$', 'i');
 
   return function(req, res) {
     const browserifyOpts = {
       debug: true,
-      detectGlobals: true
+      detectGlobals: true,
     };
 
     let targetFile;
@@ -156,9 +153,10 @@ function createRequestHandler(opts) {
     // check if this is a umd module request
     if (match || targetFile === umdModulePath) {
       // initialise the browserify target to the correct path
-      browserifyTarget = targetFile === umdModulePath ?
-        path.join(basePath, 'index.js') :
-        path.join(path.dirname(targetFile), (match[1] || 'index') + '.js');
+      browserifyTarget =
+        targetFile === umdModulePath
+          ? path.join(basePath, 'index.js')
+          : path.join(path.dirname(targetFile), (match[1] || 'index') + '.js');
 
       // if we have matched a standalone request, then add the standalone flag to the opts
       if (targetFile === umdModulePath) {
@@ -169,10 +167,15 @@ function createRequestHandler(opts) {
       }
 
       // browserify
-      b = browserify(extend({ entries: [ browserifyTarget ] }, browserifyOpts));
-      out('!{blue}200: {0} [browserify] => {1} !{grey}{2}', browserifyTarget.slice(basePath.length), req.url, JSON.stringify(browserifyOpts));
+      b = browserify(extend({ entries: [browserifyTarget] }, browserifyOpts));
+      out(
+        '!{blue}200: {0} [browserify] => {1} !{grey}{2}',
+        browserifyTarget.slice(basePath.length),
+        req.url,
+        JSON.stringify(browserifyOpts),
+      );
       res.writeHead(200, {
-        'Content-Type': 'application/javascript'
+        'Content-Type': 'application/javascript',
       });
 
       b.bundle(function(err, content) {
@@ -193,7 +196,7 @@ function generatePage(targetFile, opts, req, res) {
   const targetJsFile = targetFilename === 'index' ? findFirstJsFile(opts) : targetFilename;
 
   res.writeHead(200, {
-    'Content-type': mime.lookup(targetFile) + '; encoding: utf-8'
+    'Content-type': mime.lookup(targetFile) + '; encoding: utf-8',
   });
 
   res.end(`
@@ -206,7 +209,8 @@ function generatePage(targetFile, opts, req, res) {
 }
 
 function findFirstJsFile(opts) {
-  const allJsFiles = fs.readdirSync(path.resolve(opts.path))
+  const allJsFiles = fs
+    .readdirSync(path.resolve(opts.path))
     .filter(filename => path.extname(filename) === '.js')
     .map(filename => path.basename(filename, '.js'));
 
@@ -230,7 +234,7 @@ function readTargetFile(targetFile, opts, req, res) {
 
     out('!{green}200: {0}', req.url);
     res.writeHead(200, {
-      'Content-Type': mime.lookup(targetFile) + '; encoding: utf-8'
+      'Content-Type': mime.lookup(targetFile) + '; encoding: utf-8',
     });
 
     res.end(data);
@@ -259,10 +263,10 @@ function handleError(opts, err, res) {
   b.bundle(function(bundleError, content) {
     if (bundleError) {
       console.log('error handler broken :/', bundleError);
-      return res.end('alert(\'error handler broken :/\');');
+      return res.end("alert('error handler broken :/');");
     }
 
-    res.end('var requestId = \'' + requestId +'\';\n' + content);
+    res.end("var requestId = '" + requestId + "';\n" + content);
 
     // patch the request id into the opts
     opts = extend({}, opts, { requestId: requestId });
@@ -274,8 +278,7 @@ function handleError(opts, err, res) {
       // if we hit a require match, then get the library
       if (requireMatch) {
         requireModule(this, opts, requireMatch[1]);
-      }
-      else {
+      } else {
         reportError(this, opts, err);
       }
     });

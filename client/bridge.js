@@ -8,12 +8,11 @@ const insertCss = require('insert-css');
 insertCss(fs.readFileSync(__dirname + '/bridge.css', 'utf-8'));
 
 function reportError(err) {
-  const errDiv = crel('div', { class: 'error' },
+  const errDiv = crel(
+    'div',
+    { class: 'error' },
     crel('h3', 'Error browserifying'),
-    crel('pre', [
-      err.message,
-      err.stack
-    ])
+    crel('pre', [err.message, err.stack]),
   );
 
   document.body.insertBefore(errDiv, document.body.childNodes[0]);
