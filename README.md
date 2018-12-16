@@ -1,4 +1,3 @@
-
 # bde
 
 Browserify Development Environment.
@@ -8,10 +7,9 @@ If you are developing on your local machine using
 friend (though you should also definitely check out
 [budo](https://github.com/mattdesl/budo)).
 
-
 [![NPM](https://nodei.co/npm/bde.png)](https://nodei.co/npm/bde/)
 
-[![bitHound Score](https://www.bithound.io/github/DamonOehlman/bde/badges/score.svg)](https://www.bithound.io/github/DamonOehlman/bde) 
+[![unstable](https://img.shields.io/badge/stability-unstable-yellowgreen.svg)](https://github.com/dominictarr/stability#unstable) [![Maintainability](https://api.codeclimate.com/v1/badges/ff8bbcf1b8595b539073/maintainability)](https://codeclimate.com/github/DamonOehlman/bde/maintainability)
 
 ## Running
 
@@ -32,8 +30,9 @@ bde will serve pretty much any file, courtesy of
 [ecstatic](https://github.com/jesusabdullah/node-ecstatic). When particular
 files are requested, however, they will be routed through browserify:
 
-- *-bundle.js (look for the filename prefixed by `-bundle.js` and run
-  through browserify)
+* *-bundle.js (look for the filename prefixed by `-bundle.js` and run
+through browserify)
+
 
 ## Using HTTPS
 
@@ -49,27 +48,28 @@ The best way to configure custom browserify behaviour is to use the
 Previous versions of `bde` tried to use overcomplicated logic to identify transforms
 that were available, until I accidentally worked out it wasn't required :smile:
 
-## License(s)
+## LICENSE
 
-### MIT
+The MIT License (MIT)
 
-Copyright (c) 2017 Damon Oehlman <damon.oehlman@gmail.com>
+Copyright (c) 2018 Damon Oehlman <damon.oehlman@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
