@@ -1,14 +1,14 @@
 import * as uuid from 'uuid';
-import * as out from 'out';
 import { waitFor } from 'hatch';
 import * as debug from 'debug';
 import * as browserify from 'browserify';
 import * as path from 'path';
 import { requireModule, reportError } from './hatch-comms';
+import { ServerResponse } from 'http';
 
 const rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
 
-export function handleError(baseOpts, err, res) {
+export function handleError(baseOpts: {}, err: Error, res: ServerResponse) {
   const requireMatch = rePackageRequire.exec(err.message);
   const requestId = uuid().replace(/\-/g, '');
   const b = browserify(path.resolve(__dirname, 'client', 'bridge.js'));
@@ -32,14 +32,14 @@ export function handleError(baseOpts, err, res) {
     };
 
     // wait for the hatch ready
-    waitFor(requestId, (hatch) => {
+    waitFor(requestId, (channel) => {
       debug('event stream ready for request: ' + requestId);
 
       // if we hit a require match, then get the library
       if (requireMatch) {
-        requireModule(hatch, opts, requireMatch[1]);
+        requireModule(channel, opts, requireMatch[1]);
       } else {
-        reportError(hatch, opts, err);
+        reportError(channel, opts, err);
       }
     });
   });

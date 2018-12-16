@@ -1,12 +1,11 @@
-import * as hatch from 'hatch';
+import { EventChannel } from 'hatch/channel';
 
-export const requireModule = (hatch, opts, name) => {
+export const requireModule = (hatch: EventChannel, opts: {}, name: string) => {
   hatch.emit('install', name);
-  console.log('should install module: ' + name);
+  console.log(`should install module: ${name}`);
 };
 
-
-export const reportError = (hatch, opts, err: Error) => {
+export const reportError = (hatch: EventChannel, opts: {}, err: Error) => {
   hatch.emit('error', {
     message: err.toString(),
     stack: err.stack
