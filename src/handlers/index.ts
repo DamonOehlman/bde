@@ -1,10 +1,10 @@
 import * as browserify from 'browserify';
+import { IncomingMessage, ServerResponse } from 'http';
+import * as out from 'out';
 import * as path from 'path';
-import * as url from 'url';
 import * as preconditions from 'preconditions-ts';
 import { stringify } from 'querystring';
-import * as out from 'out';
-import { ServerResponse, IncomingMessage } from 'http';
+import * as url from 'url';
 import { handleError } from './error';
 import { readTargetFile } from './static';
 
@@ -63,12 +63,16 @@ export const createRequestHandler = (opts: RequestHandlerOpts) => {
       // browserify
       const bundle = browserify({
         ...{ entries: [browserifyTarget] },
-        ...browserifyOpts
+        ...browserifyOpts,
       });
 
-      out('!{blue}200: {0} [browserify] => {1} !{grey}{2}', browserifyTarget.slice(opts.basePath.length), req.url, JSON.stringify(browserifyOpts));
+      out(
+        '!{blue}200: {0} [browserify] => {1} !{grey}{2}',
+        browserifyTarget.slice(opts.basePath.length), req.url, JSON.stringify(browserifyOpts),
+      );
+
       res.writeHead(200, {
-        'Content-Type': 'application/javascript'
+        'Content-Type': 'application/javascript',
       });
 
       bundle.bundle((err, content) => err ? handleError(opts, err, res) : res.end(content));
@@ -84,6 +88,6 @@ function parseUrl(urlString: string): ValidatedUrlParts {
     : url.parse(urlString);
 
   return {
-    pathname: preconditions.requiredString(parts, 'pathname')
+    pathname: preconditions.requiredString(parts, 'pathname'),
   };
 }

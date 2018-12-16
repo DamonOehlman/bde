@@ -39,6 +39,8 @@
   "scripts": {
     "prepare": "tsc",
     "compile": "tsc",
+    "lint": "tslint src/**",
+    "lint:fix": "tslint --fix src/**",
     "gendocs": "embellish README.md"
   },
   "stability": "unstable",

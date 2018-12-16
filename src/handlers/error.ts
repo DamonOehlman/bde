@@ -1,10 +1,10 @@
-import * as uuid from 'uuid';
-import { waitFor } from 'hatch';
-import * as debug from 'debug';
 import * as browserify from 'browserify';
-import * as path from 'path';
-import { requireModule, reportError } from './hatch-comms';
+import * as debug from 'debug';
+import { waitFor } from 'hatch';
 import { ServerResponse } from 'http';
+import * as path from 'path';
+import * as uuid from 'uuid';
+import { reportError, requireModule } from './hatch-comms';
 
 const rePackageRequire = /^module\s\"([^\.\"]*)\".*$/;
 
@@ -19,6 +19,7 @@ export function handleError(baseOpts: {}, err: Error, res: ServerResponse) {
   // bundle
   b.bundle((bundleError, content) => {
     if (bundleError) {
+      // tslint:disable-next-line:no-console
       console.error('error handler broken :/', bundleError);
       return res.end('alert(\'error handler broken :/\');');
     }
@@ -28,7 +29,7 @@ export function handleError(baseOpts: {}, err: Error, res: ServerResponse) {
     // patch the request id into the opts
     const opts = {
       ...baseOpts,
-      ...{ requestId: requestId }
+      ...{ requestId },
     };
 
     // wait for the hatch ready

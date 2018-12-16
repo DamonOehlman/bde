@@ -1,8 +1,8 @@
-import { ServerResponse, IncomingMessage } from "http";
-import { readFile, readdir } from 'fs';
+import { readdir, readFile } from 'fs';
+import { IncomingMessage, ServerResponse } from 'http';
 import { getType } from 'mime';
-import * as path from 'path';
 import * as out from 'out';
+import * as path from 'path';
 
 import * as debugModule from 'debug';
 const debug = debugModule('bde');
@@ -14,7 +14,7 @@ interface StaticFileOpts {
 export function readTargetFile(targetFile: string, opts: StaticFileOpts, req: IncomingMessage, res: ServerResponse) {
   debug(`attempting to read file: ${targetFile}`);
 
-  readFile(targetFile, function(err, data) {
+  readFile(targetFile, (err, data) => {
     if (err) {
       if (path.extname(targetFile) === '.html') {
         try {
@@ -36,14 +36,19 @@ export function readTargetFile(targetFile: string, opts: StaticFileOpts, req: In
 
     out('!{green}200: {0}', req.url);
     res.writeHead(200, {
-      'Content-Type': getType(targetFile) + '; encoding: utf-8'
+      'Content-Type': getType(targetFile) + '; encoding: utf-8',
     });
 
     res.end(data);
   });
 }
 
-export async function generatePage(targetFile: string, opts: StaticFileOpts, req: IncomingMessage, res: ServerResponse) {
+export async function generatePage(
+  targetFile: string,
+  opts: StaticFileOpts,
+  req: IncomingMessage,
+  res: ServerResponse,
+) {
   debug(`attemptig to generate placeholder html file: ${targetFile}`);
   const targetFilename = path.basename(targetFile, '.html');
   const targetJsFile = targetFilename === 'index' ? (await findFirstJsFile(opts)) : targetFilename;
@@ -56,7 +61,7 @@ export async function generatePage(targetFile: string, opts: StaticFileOpts, req
   }
 
   res.writeHead(200, {
-    'Content-type': getType(targetFile) + '; encoding: utf-8'
+    'Content-type': getType(targetFile) + '; encoding: utf-8',
   });
 
   res.end(`
@@ -77,8 +82,8 @@ function findFirstJsFile(opts: StaticFileOpts): Promise<string | null> {
       }
 
       const allJsFiles = files
-        .filter(filename => path.extname(filename) === '.js')
-        .map(filename => path.basename(filename, '.js'));
+        .filter((filename) => path.extname(filename) === '.js')
+        .map((filename) => path.basename(filename, '.js'));
 
       resolve(allJsFiles[0] || null);
     });
