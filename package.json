@@ -16,7 +16,7 @@
     "insert-css": "^2.0.0",
     "mime": "^2.4.0",
     "nopt": "^4.0.1",
-    "out": "^1.0.0",
+    "out": "^1.1.0",
     "preconditions-ts": "^2.1.1",
     "uuid": "^3.0.1"
   },
@@ -39,8 +39,8 @@
   "scripts": {
     "prepare": "tsc",
     "compile": "tsc",
-    "lint": "tslint src/**",
-    "lint:fix": "tslint --fix src/**",
+    "lint": "tslint src/**/**",
+    "lint:fix": "tslint --fix src/**/**",
     "gendocs": "embellish README.md"
   },
   "stability": "unstable",

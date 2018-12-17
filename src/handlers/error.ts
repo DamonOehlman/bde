@@ -24,7 +24,7 @@ export function handleError(baseOpts: {}, err: Error, res: ServerResponse) {
       return res.end('alert(\'error handler broken :/\');');
     }
 
-    res.end('const requestId = \'' + requestId +'\';\n' + content);
+    res.end('const requestId = \'' + requestId + '\';\n' + content);
 
     // patch the request id into the opts
     const opts = {

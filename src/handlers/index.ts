@@ -3,7 +3,6 @@ import { IncomingMessage, ServerResponse } from 'http';
 import * as out from 'out';
 import * as path from 'path';
 import * as preconditions from 'preconditions-ts';
-import { stringify } from 'querystring';
 import * as url from 'url';
 import { handleError } from './error';
 import { readTargetFile } from './static';
@@ -15,7 +14,7 @@ interface RequestHandlerOpts {
   basePath: string;
   path: string;
   suffix: string;
-};
+}
 
 interface ValidatedUrlParts {
   pathname: string;
