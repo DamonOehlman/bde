@@ -1,2 +1,5 @@
 .DS_Store
 node_modules
+yarn-error.log
+index.js
+lib/**
