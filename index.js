@@ -1,6 +1,6 @@
 const browserify = require('browserify');
 const debug = require('debug')('bde');
-const hatch = require('hatch');
+const { hatch } = require('hatch');
 const fs = require('fs');
 const mime = require('mime');
 const out = require('out');
@@ -193,7 +193,7 @@ function generatePage(targetFile, opts, req, res) {
   const targetJsFile = targetFilename === 'index' ? findFirstJsFile(opts) : targetFilename;
 
   res.writeHead(200, {
-    'Content-type': mime.lookup(targetFile) + '; encoding: utf-8'
+    'Content-type': mime.getType(targetFile) + '; encoding: utf-8'
   });
 
   res.end(`
@@ -230,7 +230,7 @@ function readTargetFile(targetFile, opts, req, res) {
 
     out('!{green}200: {0}', req.url);
     res.writeHead(200, {
-      'Content-Type': mime.lookup(targetFile) + '; encoding: utf-8'
+      'Content-Type': mime.getType(targetFile) + '; encoding: utf-8'
     });
 
     res.end(data);
